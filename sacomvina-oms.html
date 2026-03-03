@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sacomvina Logistics – Hệ thống Quản lý Nội bộ</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { navy: { 900: '#0F1D2E', 800: '#102A43', 700: '#1A3A52' } }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .sidebar-item {
+      transition: all 0.18s ease;
+    }
+
+    .sidebar-item:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-item.active {
+      background-color: #1D6EDB;
+      border-left: 4px solid #60ABFF;
+    }
+
+    .sidebar-item:not(.active) {
+      border-left: 4px solid transparent;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-primary {
+      background: #1D6EDB;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover {
+      background: #1558B0;
+    }
+
+    .btn-success {
+      background: #16A34A;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.15s;
+    }
+
+    .btn-success:hover {
+      background: #15803D;
+    }
+
+    .btn-danger {
+      background: #DC2626;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.15s;
+    }
+
+    .btn-danger:hover {
+      background: #B91C1C;
+    }
+
+    .btn-warning {
+      background: #D97706;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.15s;
+    }
+
+    .btn-warning:hover {
+      background: #B45309;
+    }
+
+    .btn-purple {
+      background: #7C3AED;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.15s;
+    }
+
+    .btn-purple:hover {
+      background: #6D28D9;
+    }
+
+    .input-lg {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1.1rem;
+      border: 1.5px solid #D1D5DB;
+      border-radius: 8px;
+      outline: none;
+      transition: border 0.15s;
+      background: #FAFAFA;
+    }
+
+    .input-lg:focus {
+      border-color: #1D6EDB;
+      background: #fff;
+    }
+
+    .select-lg {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1.1rem;
+      border: 1.5px solid #D1D5DB;
+      border-radius: 8px;
+      outline: none;
+      background: #FAFAFA;
+    }
+
+    .select-lg:focus {
+      border-color: #1D6EDB;
+      background: #fff;
+    }
+
+    .label-lg {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 6px;
+      letter-spacing: 0.01em;
+    }
+
+    .badge-ok {
+      background: #DCFCE7;
+      color: #16A34A;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .badge-warn {
+      background: #FEF3C7;
+      color: #D97706;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .badge-danger {
+      background: #FEE2E2;
+      color: #DC2626;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .badge-blue {
+      background: #DBEAFE;
+      color: #1D4ED8;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22C55E;
+      display: inline-block;
+      margin-right: 6px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5)
+      }
+
+      70% {
+        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0)
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0)
+      }
+    }
+
+    .gate-log-scroll {
+      max-height: 320px;
+      overflow-y: scroll;
+      scrollbar-width: thick;
+      scrollbar-color: #94A3B8 #F1F5F9;
+    }
+
+    .gate-log-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .gate-log-scroll::-webkit-scrollbar-track {
+      background: #F1F5F9;
+      border-radius: 4px;
+    }
+
+    .gate-log-scroll::-webkit-scrollbar-thumb {
+      background: #94A3B8;
+      border-radius: 4px;
+      border: 1px solid #CBD5E1;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 3px;
+    }
+
+    .export-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .export-dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      z-index: 50;
+      min-width: 150px;
+    }
+
+    .export-dropdown-menu button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #374151;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .export-dropdown-menu button:hover {
+      background: #F3F4F6;
+    }
+
+    .accordion-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #EFF6FF;
+      border: 1.5px solid #BFDBFE;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-weight: 700;
+      color: #1D4ED8;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .accordion-btn:hover {
+      background: #DBEAFE;
+    }
+
+    .in-progress-card {
+      border: 2px solid #3B82F6;
+      background: #EFF6FF;
+      border-radius: 10px;
+      padding: 14px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ── MOCK DATA ──
+    const PART_OPTIONS = [
+      'Dầu nhớt 10W-40', 'Dầu nhớt 15W-40', 'Lọc gió', 'Lọc dầu', 'Lọc nhiên liệu',
+      'Má phanh trước', 'Má phanh sau', 'Dây cu-roa', 'Bình ắc-quy 12V', 'Bơm nước',
+      'Bugi đánh lửa', 'Nhớt hộp số', 'Dầu thắng', 'Gioăng đầu máy', 'Vòng bi bánh xe'
+    ];
+
+    const MAINTENANCE_HISTORY = [
+      { id: 'WO-2024-031', plate: '51C-888.88', type: 'Bảo dưỡng định kỳ', parts: 'Dầu nhớt 10W-40', partCodes: ['OI-LB-0031'], date: '28/02/2026', status: 'Hoàn thành', staff: 'Nguyễn Văn A' },
+      { id: 'WO-2024-030', plate: '62B-123.45', type: 'Sửa chữa hư hỏng', parts: 'Má phanh trước', partCodes: ['BK-FR-0030'], date: '27/02/2026', status: 'Đang thực hiện', staff: 'Trần Thị B' },
+      { id: 'WO-2024-029', plate: '79A-567.00', type: 'Bảo dưỡng định kỳ', parts: 'Dây cu-roa', partCodes: ['BL-WP-0029a', 'BL-WP-0029b'], date: '25/02/2026', status: 'Hoàn thành', staff: 'Lê Văn C' },
+      { id: 'WO-2024-028', plate: '51C-999.11', type: 'Sửa chữa hư hỏng', parts: 'Bình ắc-quy 12V', partCodes: ['BT-12V-0028'], date: '22/02/2026', status: 'Đang thực hiện', staff: 'Phạm Thị D' },
+    ];
+
+    const COMPANIES = [
+      { id: 1, name: 'Công ty TNHH Hưng Phát', quota: 10, current: 4, expiry: '31/12/2026' },
+      { id: 2, name: 'Cty CP Vận tải Đông Nam', quota: 5, current: 5, expiry: '30/06/2026' },
+      { id: 3, name: 'Cty TNHH TM Minh Khoa', quota: 8, current: 7, expiry: '31/12/2026' },
+      { id: 4, name: 'Công ty CP Lương thực An Giang', quota: 12, current: 2, expiry: '31/03/2027' },
+      { id: 5, name: 'Cty TNHH Xuất nhập khẩu Bình Minh', quota: 6, current: 6, expiry: '15/04/2026' },
+    ];
+
+    const GATE_LOG = [
+      { time: '22:41', company: 'Cty TNHH TM Minh Khoa', action: 'VÀO', plate: '51C-123.45' },
+      { time: '22:19', company: 'Cty TNHH TM Minh Khoa', action: 'VÀO', plate: '51C-234.56' },
+      { time: '21:55', company: 'Công ty TNHH Hưng Phát', action: 'RA', plate: '62B-345.67' },
+      { time: '21:30', company: 'Cty CP Vận tải Đông Nam', action: 'VÀO', plate: '79A-456.78' },
+      { time: '20:58', company: 'Công ty TNHH Hưng Phát', action: 'VÀO', plate: '79A-567.89' },
+    ];
+
+    const LIFT_HISTORY = [
+      { id: 'LH-0045', company: 'Công ty TNHH Hưng Phát', action: 'NÂNG', weight: 18, hasCrew: true, start: '21:05', date: '03/03/2026' },
+      { id: 'LH-0044', company: 'Cty CP Vận tải Đông Nam', action: 'HẠ', weight: 22, hasCrew: false, start: '19:30', date: '03/03/2026' },
+      { id: 'LH-0043', company: 'Cty TNHH TM Minh Khoa', action: 'NÂNG', weight: 15, hasCrew: true, start: '08:00', date: '03/03/2026' },
+    ];
+
+    const VEHICLE_LIST = [
+      { plate: '51C-888.88', brand: 'Hyundai HD120', year: 2020, owner: 'Nguyễn Văn A' },
+      { plate: '62B-123.45', brand: 'Isuzu NQR', year: 2019, owner: 'Trần Thị B' },
+      { plate: '79A-567.00', brand: 'Mitsubishi Fuso', year: 2021, owner: 'Lê Văn C' },
+      { plate: '51C-999.11', brand: 'Kia K250', year: 2022, owner: 'Phạm Thị D' },
+    ];
+
+    // ── ICON ──
+    function Icon({ name, size = 20, className = '' }) {
+      const ref = useRef(null);
+      useEffect(() => {
+        if (ref.current && window.lucide) {
+          ref.current.innerHTML = '';
+          const fn = window.lucide[name.replace(/-./g, m => m[1].toUpperCase())];
+          if (fn) ref.current.innerHTML = fn.toSvg({ width: size, height: size, class: className });
+        }
+      }, [name, size, className]);
+      return <span ref={ref} style={{ display: 'inline-flex', alignItems: 'center' }} />;
+    }
+
+    // ── EXPORT EXCEL HELPER (CSV download) ──
+    function exportCSV(filename, rows) {
+      const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+
+    // ── EXPORT DROPDOWN BUTTON ──
+    function ExportButton({ onExport }) {
+      const [open, setOpen] = useState(false);
+      const ref = useRef(null);
+      useEffect(() => {
+        const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+      }, []);
+      const periods = ['Ngày', 'Tháng', 'Quý', 'Năm'];
+      return (
+        <div className="export-dropdown" ref={ref}>
+          <button className="btn-success px-4 py-2 text-sm flex items-center gap-2" onClick={() => setOpen(o => !o)}>
+            <Icon name="download" size={16} /> Xuất Excel ▾
+          </button>
+          {open && (
+            <div className="export-dropdown-menu">
+              {periods.map(p => (
+                <button key={p} onClick={() => { onExport(p); setOpen(false); }}>📊 Theo {p}</button>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ── TOPBAR ──
+    function Topbar() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      const dateStr = now.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+      return (
+        <header className="bg-white shadow-sm px-6 py-3 flex items-center justify-between sticky top-0 z-10" style={{ minHeight: 64 }}>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg" style={{ background: '#1D6EDB' }}>
+              <Icon name="truck" size={20} className="text-white" />
+            </div>
+            <div>
+              <div className="font-extrabold text-gray-900 text-lg leading-tight tracking-tight">SACOMVINA LOGISTICS</div>
+              <div className="text-xs text-gray-400">{dateStr} · {timeStr}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <button className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500">
+              <Icon name="bell" size={22} />
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+            <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-3 py-1.5 rounded-lg">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-sm" style={{ background: '#1D6EDB' }}>NV</div>
+              <div className="hidden sm:block">
+                <div className="text-sm font-semibold text-gray-800">Nguyễn Văn Nam</div>
+                <div className="text-xs text-gray-400">Quản đốc</div>
+              </div>
+            </div>
+          </div>
+        </header>
+      );
+    }
+
+    // ── SIDEBAR ──
+    const NAV_ITEMS = [
+      { key: 'maintenance', label: 'Bảo Dưỡng Xe', icon: 'wrench', sub: 'Lệnh bảo dưỡng & vật tư' },
+      { key: 'vehicle', label: 'Quản Lý Xe', icon: 'car', sub: 'Tracking xe & vật tư' },
+      { key: 'gate', label: 'Kiểm Soát Cổng', icon: 'shield-check', sub: 'Quota & ra/vào xe' },
+      { key: 'lift', label: 'Nâng Hạ Hàng', icon: 'arrow-up-down', sub: 'Lệnh nâng hạ đa nhiệm' },
+    ];
+
+    function Sidebar({ active, setActive }) {
+      return (
+        <aside className="flex flex-col h-full" style={{ background: '#102A43', width: 230, minWidth: 230, flexShrink: 0 }}>
+          <div className="px-5 pt-5 pb-4 border-b border-white/10">
+            <div className="text-xs font-bold text-white/40 uppercase tracking-widest">CHỨC NĂNG</div>
+          </div>
+          <nav className="flex-1 py-3 space-y-1 px-2">
+            {NAV_ITEMS.map(item => (
+              <button key={item.key} onClick={() => setActive(item.key)}
+                className={`sidebar-item w-full text-left flex items-center gap-3 px-3 py-3.5 rounded-lg ${active === item.key ? 'active' : ''}`}>
+                <span className={`flex-shrink-0 ${active === item.key ? 'text-white' : 'text-white/60'}`}>
+                  <Icon name={item.icon} size={22} />
+                </span>
+                <div>
+                  <div className={`text-sm font-bold leading-tight ${active === item.key ? 'text-white' : 'text-white/80'}`}>{item.label}</div>
+                  <div className="text-xs text-white/40 mt-0.5">{item.sub}</div>
+                </div>
+              </button>
+            ))}
+          </nav>
+          <div className="px-4 py-4 border-t border-white/10">
+            <div className="flex items-center gap-2">
+              <span className="pulse-dot"></span>
+              <span className="text-xs text-white/50">Hệ thống đang hoạt động</span>
+            </div>
+            <div className="text-xs text-white/30 mt-1">v2.2.0 – 03/03/2026</div>
+          </div>
+        </aside>
+      );
+    }
+
+    // ── TAB 1: MAINTENANCE ──
+    function MaintenanceTab() {
+      const [form, setForm] = useState({ plate: '', jobType: '', partName: '', qty: '1', partCodes: [''] });
+      const [history, setHistory] = useState(MAINTENANCE_HISTORY);
+      const [submitted, setSubmitted] = useState(false);
+
+      const handleQtyChange = (val) => {
+        const n = Math.max(1, parseInt(val) || 1);
+        const codes = Array.from({ length: n }, (_, i) => form.partCodes[i] || '');
+        setForm({ ...form, qty: String(n), partCodes: codes });
+      };
+      const handleCodeChange = (idx, val) => {
+        const codes = [...form.partCodes]; codes[idx] = val;
+        setForm({ ...form, partCodes: codes });
+      };
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!form.plate || !form.jobType || !form.partName || !form.qty) return;
+        const partCodes = form.partCodes.map((c, i) => c || `AUTO-${Date.now().toString().slice(-4)}-${i + 1}`);
+        const newOrder = {
+          id: `WO-2026-0${String(history.length + 32).padStart(2, '0')}`,
+          plate: form.plate.toUpperCase(), type: form.jobType,
+          parts: form.partName, partCodes, date: new Date().toLocaleDateString('vi-VN'),
+          status: 'Đang thực hiện', staff: 'Nguyễn Văn Nam',
+        };
+        setHistory([newOrder, ...history]);
+        setForm({ plate: '', jobType: '', partName: '', qty: '1', partCodes: [''] });
+        setSubmitted(true); setTimeout(() => setSubmitted(false), 3000);
+      };
+      const handleComplete = (id) => setHistory(history.map(h => h.id === id ? { ...h, status: 'Hoàn thành' } : h));
+      const handleExport = (period) => {
+        const rows = [['Mã lệnh', 'Biển số', 'Loại công việc', 'Vật tư', 'Mã vật tư', 'Ngày', 'Trạng thái', 'Nhân viên']];
+        history.forEach(h => rows.push([h.id, h.plate, h.type, h.parts, (h.partCodes || []).join('; '), h.date, h.status, h.staff]));
+        exportCSV(`bao-duong-${period.toLowerCase()}.csv`, rows);
+      };
+
+      return (
+        <div className="fade-in grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+          <div className="card p-6 flex flex-col gap-5">
+            <div>
+              <h2 className="text-xl font-extrabold text-gray-900 flex items-center gap-2"><Icon name="plus-circle" size={24} className="text-blue-600" /> Tạo Lệnh Bảo Dưỡng Mới</h2>
+              <p className="text-sm text-gray-500 mt-1">Điền đầy đủ thông tin → Bấm nút Tạo Lệnh &amp; Xuất Kho</p>
+            </div>
+            {submitted && (<div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 font-bold fade-in"><Icon name="check-circle" size={20} /> Tạo lệnh thành công!</div>)}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="label-lg">🚗 Biển số xe</label>
+                <input className="input-lg" placeholder="Ví dụ: 51C-888.88" value={form.plate} onChange={e => setForm({ ...form, plate: e.target.value })} required />
+              </div>
+              <div>
+                <label className="label-lg">🔧 Loại công việc</label>
+                <select className="select-lg" value={form.jobType} onChange={e => setForm({ ...form, jobType: e.target.value })} required>
+                  <option value="">-- Chọn loại công việc --</option>
+                  <option>Bảo dưỡng định kỳ</option><option>Sửa chữa hư hỏng</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2">
+                  <label className="label-lg">📦 Tên vật tư</label>
+                  <select className="select-lg" value={form.partName} onChange={e => setForm({ ...form, partName: e.target.value })} required>
+                    <option value="">-- Chọn vật tư --</option>
+                    {PART_OPTIONS.map(p => <option key={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="label-lg">Số lượng</label>
+                  <input className="input-lg" type="number" min="1" placeholder="1" value={form.qty} onChange={e => handleQtyChange(e.target.value)} required />
+                </div>
+              </div>
+              <div>
+                <label className="label-lg">🔖 Mã định danh vật tư (Serial / QR)</label>
+                <div className="space-y-2">
+                  {form.partCodes.map((code, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-gray-400 w-6 flex-shrink-0">#{idx + 1}</span>
+                      <input className="input-lg" placeholder={`Mã vật tư ${idx + 1} – Để trống: tự động tạo`} value={code} onChange={e => handleCodeChange(idx, e.target.value)} />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Nếu để trống, hệ thống sẽ tự sinh mã định danh duy nhất.</p>
+              </div>
+              <button type="submit" className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-3 mt-2">
+                <Icon name="clipboard-check" size={22} /> TẠO LỆNH &amp; XUẤT KHO
+              </button>
+            </form>
+          </div>
+          <div className="card p-6 flex flex-col gap-4 overflow-hidden">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h2 className="text-xl font-extrabold text-gray-900 flex items-center gap-2"><Icon name="list" size={22} className="text-gray-600" /> Lịch Sử Bảo Dưỡng</h2>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-gray-500">{history.length} lệnh</span>
+                <ExportButton onExport={handleExport} />
+              </div>
+            </div>
+            <div className="overflow-y-auto space-y-3 flex-1 pr-1">
+              {history.map((h) => (
+                <div key={h.id} className={`border rounded-lg p-4 ${h.status === 'Đang thực hiện' ? 'border-blue-200 bg-blue-50' : 'border-gray-100 bg-white'}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-extrabold text-gray-900 text-base">{h.plate}</span>
+                        <span className="text-xs font-semibold text-gray-400">{h.id}</span>
+                      </div>
+                      <div className="text-sm text-gray-600 mt-0.5">{h.type}</div>
+                      <div className="text-sm text-gray-700 mt-1"><span className="font-semibold">Vật tư:</span> {h.parts}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">Mã: <span className="font-mono">{(h.partCodes || []).join(', ')}</span></div>
+                    </div>
+                    <div className="flex-shrink-0 text-right">
+                      <span className={h.status === 'Hoàn thành' ? 'badge-ok' : 'badge-warn'}>{h.status}</span>
+                      <div className="text-xs text-gray-400 mt-1">{h.date}</div>
+                      <div className="text-xs text-gray-400">{h.staff}</div>
+                      {h.status === 'Đang thực hiện' && (
+                        <button onClick={() => handleComplete(h.id)} className="mt-2 btn-success px-3 py-1.5 text-xs flex items-center gap-1 ml-auto">
+                          <Icon name="check" size={13} /> Hoàn thành
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── TAB 2: VEHICLE MANAGEMENT ──
+    function VehicleManagementTab() {
+      const [selectedPlate, setSelectedPlate] = useState(null);
+      const [showPurchaseForm, setShowPurchaseForm] = useState(false);
+      const [purchaseForm, setPurchaseForm] = useState({ invoiceNo: '', supplier: '', date: '', amount: '', imageName: '' });
+      const [purchases, setPurchases] = useState([
+        { id: 'HD-001', invoiceNo: 'INV-2026-001', supplier: 'Cty TNHH Phụ tùng Minh Long', date: '20/02/2026', amount: '2.450.000', plate: '51C-888.88', imageName: 'hoadon_001.jpg' },
+        { id: 'HD-002', invoiceNo: 'INV-2026-002', supplier: 'Garage Tuấn Xe', date: '27/02/2026', amount: '850.000', plate: '62B-123.45', imageName: '' },
+      ]);
+      const [purchaseMsg, setPurchaseMsg] = useState(false);
+
+      const now = new Date();
+      const calcUsedTime = (dateStr) => {
+        const p = dateStr.split('/');
+        if (p.length !== 3) return 'N/A';
+        const d = new Date(`${p[2]}-${p[1]}-${p[0]}`);
+        const days = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+        if (days < 1) return 'Hôm nay';
+        if (days < 30) return `${days} ngày`;
+        return `${Math.floor(days / 30)} tháng`;
+      };
+      const vehicleHistory = (plate) => MAINTENANCE_HISTORY.filter(h => h.plate === plate);
+      const vehiclePurchases = (plate) => purchases.filter(p => p.plate === plate);
+
+      const handlePurchaseSubmit = (e) => {
+        e.preventDefault();
+        const newP = { id: `HD-${String(purchases.length + 3).padStart(3, '0')}`, ...purchaseForm, plate: selectedPlate || 'Chưa gán' };
+        setPurchases([newP, ...purchases]);
+        setPurchaseForm({ invoiceNo: '', supplier: '', date: '', amount: '', imageName: '' });
+        setShowPurchaseForm(false); setPurchaseMsg(true);
+        setTimeout(() => setPurchaseMsg(false), 3000);
+      };
+      const handleExport = (period) => {
+        const rows = [['Biển số', 'Vật tư', 'Mã vật tư', 'Ngày thay', 'Đã sử dụng', 'Trạng thái']];
+        MAINTENANCE_HISTORY.forEach(h => rows.push([h.plate, h.parts, (h.partCodes || []).join('; '), h.date, calcUsedTime(h.date), h.status]));
+        exportCSV(`quan-ly-xe-${period.toLowerCase()}.csv`, rows);
+      };
+
+      return (
+        <div className="fade-in space-y-6">
+          {purchaseMsg && (<div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 font-bold fade-in"><Icon name="check-circle" size={20} /> Ghi nhận hóa đơn mua ngoài thành công!</div>)}
+          <div className="card p-6">
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
+              <h2 className="text-xl font-extrabold text-gray-900 flex items-center gap-2"><Icon name="car" size={24} className="text-blue-600" /> Danh Sách Xe &amp; Lịch Sử Vật Tư</h2>
+              <div className="flex gap-2 flex-wrap">
+                <ExportButton onExport={handleExport} />
+                <button onClick={() => setShowPurchaseForm(true)} className="btn-purple px-4 py-2 text-sm flex items-center gap-2">
+                  <Icon name="receipt" size={16} /> Ghi nhận vật tư mua ngoài
+                </button>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b-2 border-gray-100">
+                    {['Biển số', 'Hãng xe / Năm', 'Vật tư gần nhất', 'Mã vật tư', 'Ngày thay', 'Đã sử dụng', ''].map(h => (
+                      <th key={h} className="text-left py-3 px-3 text-xs font-bold text-gray-400 uppercase">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {VEHICLE_LIST.map(v => {
+                    const hist = vehicleHistory(v.plate); const last = hist[0];
+                    return (
+                      <tr key={v.plate} className={`hover:bg-gray-50 transition-colors ${selectedPlate === v.plate ? 'bg-blue-50' : ''}`}>
+                        <td className="py-3 px-3 font-extrabold text-blue-700 text-base">{v.plate}</td>
+                        <td className="py-3 px-3 text-gray-700">{v.brand} <span className="text-gray-400 text-xs">({v.year})</span></td>
+                        <td className="py-3 px-3 text-gray-800 font-medium">{last ? last.parts : <span className="text-gray-300">Chưa có</span>}</td>
+                        <td className="py-3 px-3 font-mono text-xs text-gray-500">{last ? (last.partCodes || []).join(', ') : '–'}</td>
+                        <td className="py-3 px-3 text-gray-600">{last ? last.date : '–'}</td>
+                        <td className="py-3 px-3">{last ? <span className="badge-blue">{calcUsedTime(last.date)}</span> : '–'}</td>
+                        <td className="py-3 px-3">
+                          <button onClick={() => setSelectedPlate(selectedPlate === v.plate ? null : v.plate)} className="btn-primary px-3 py-1.5 text-xs">
+                            {selectedPlate === v.plate ? '▲ Ẩn' : '▼ Xem'}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {selectedPlate && (
+              <div className="mt-5 border-t pt-5 fade-in">
+                <h3 className="font-extrabold text-gray-800 text-base mb-3 flex items-center gap-2">
+                  <Icon name="history" size={18} className="text-blue-600" /> Lịch sử đầy đủ – Xe <span className="text-blue-600 ml-1">{selectedPlate}</span>
+                </h3>
+                <div className="space-y-2">
+                  {vehicleHistory(selectedPlate).length === 0 && vehiclePurchases(selectedPlate).length === 0 && (
+                    <p className="text-gray-400 text-sm py-4 text-center">Chưa có lịch sử bảo dưỡng.</p>
+                  )}
+                  {vehicleHistory(selectedPlate).map(h => (
+                    <div key={h.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg flex-wrap">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
+                      <div className="flex-1 min-w-0"><span className="font-semibold text-gray-800">{h.parts}</span><span className="mx-2 text-gray-300">|</span><span className="text-xs font-mono text-gray-400">{(h.partCodes || []).join(', ')}</span></div>
+                      <div className="text-xs text-gray-500">{h.date}</div>
+                      <span className="badge-blue">{calcUsedTime(h.date)}</span>
+                      <span className={h.status === 'Hoàn thành' ? 'badge-ok' : 'badge-warn'}>{h.status}</span>
+                    </div>
+                  ))}
+                  {vehiclePurchases(selectedPlate).map(p => (
+                    <div key={p.id} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-100 flex-wrap">
+                      <div className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
+                      <div className="flex-1 min-w-0"><span className="font-semibold text-gray-800">Mua ngoài</span><span className="ml-2 text-xs text-purple-600 font-bold">HĐ: {p.invoiceNo}</span><span className="mx-2 text-gray-300">|</span><span className="text-xs text-gray-500">{p.supplier}</span></div>
+                      <div className="text-xs text-gray-500">{p.date}</div>
+                      <div className="text-xs font-bold text-purple-700">{p.amount} đ</div>
+                      {p.imageName ? <span className="badge-ok text-xs">📎 Có HĐ</span> : <span className="badge-warn text-xs">Chưa upload</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {showPurchaseForm && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.45)' }}>
+              <div className="card p-6 w-full max-w-lg mx-4 fade-in" style={{ maxHeight: '90vh', overflowY: 'auto' }}>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-lg font-extrabold text-gray-900 flex items-center gap-2"><Icon name="receipt" size={20} className="text-purple-600" /> Ghi Nhận Vật Tư Mua Ngoài</h3>
+                  <button onClick={() => setShowPurchaseForm(false)} className="text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none">&times;</button>
+                </div>
+                <form onSubmit={handlePurchaseSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><label className="label-lg">Số Hóa đơn</label><input className="input-lg" placeholder="VD: INV-2026-010" value={purchaseForm.invoiceNo} onChange={e => setPurchaseForm({ ...purchaseForm, invoiceNo: e.target.value })} required /></div>
+                    <div><label className="label-lg">Ngày xuất HĐ</label><input className="input-lg" type="date" value={purchaseForm.date} onChange={e => setPurchaseForm({ ...purchaseForm, date: e.target.value })} required /></div>
+                  </div>
+                  <div><label className="label-lg">Nhà cung cấp</label><input className="input-lg" placeholder="Tên công ty / cửa hàng" value={purchaseForm.supplier} onChange={e => setPurchaseForm({ ...purchaseForm, supplier: e.target.value })} required /></div>
+                  <div><label className="label-lg">Số tiền (đồng)</label><input className="input-lg" placeholder="VD: 1.500.000" value={purchaseForm.amount} onChange={e => setPurchaseForm({ ...purchaseForm, amount: e.target.value })} required /></div>
+                  <div><label className="label-lg">Gán cho xe</label>
+                    <select className="select-lg" value={selectedPlate || ''} onChange={e => setSelectedPlate(e.target.value || null)}>
+                      <option value="">-- Chưa gán xe --</option>
+                      {VEHICLE_LIST.map(v => <option key={v.plate} value={v.plate}>{v.plate} – {v.brand}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label-lg">📎 Upload ảnh hóa đơn</label>
+                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center hover:border-blue-300 transition-colors cursor-pointer" onClick={() => document.getElementById('invoiceFileInput').click()}>
+                      {purchaseForm.imageName ? (<div className="text-green-700 font-bold flex items-center justify-center gap-2"><Icon name="check-circle" size={20} /> {purchaseForm.imageName}</div>) : (<><Icon name="upload-cloud" size={36} className="text-gray-300" /><p className="text-gray-400 mt-2 text-sm font-medium">Bấm để chọn ảnh HĐ (JPG, PNG, PDF)</p></>)}
+                    </div>
+                    <input id="invoiceFileInput" type="file" accept="image/*,.pdf" className="hidden" onChange={e => { const f = e.target.files[0]; if (f) setPurchaseForm({ ...purchaseForm, imageName: f.name }); }} />
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <button type="submit" className="btn-primary flex-1 py-3 text-base flex items-center justify-center gap-2"><Icon name="save" size={18} /> Lưu hóa đơn</button>
+                    <button type="button" onClick={() => setShowPurchaseForm(false)} className="btn-warning flex-1 py-3 text-base">Huỷ</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ── TAB 3: GATE CONTROL ──
+    function GateTab() {
+      const [companies, setCompanies] = useState(COMPANIES);
+      const [selectedCompanyId, setSelectedCompanyId] = useState('');
+      const [log, setLog] = useState(GATE_LOG);
+      const [plate, setPlate] = useState('');
+      const [flash, setFlash] = useState(null);
+      const [quotaOpen, setQuotaOpen] = useState(false);
+
+      const selected = companies.find(c => c.id === Number(selectedCompanyId));
+      const isFull = selected && selected.current >= selected.quota;
+      const isNearFull = selected && !isFull && selected.current >= selected.quota - 1;
+
+      const handleGateAction = (action) => {
+        if (!selected) return;
+        const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        const plateDisp = plate.trim().toUpperCase() || '??-???';
+        if (action === 'in') {
+          if (isFull) return;
+          setCompanies(companies.map(c => c.id === selected.id ? { ...c, current: c.current + 1 } : c));
+          setLog([{ time: now, company: selected.name, action: 'VÀO', plate: plateDisp }, ...log]);
+          setFlash('in');
+        } else {
+          if (selected.current <= 0) return;
+          setCompanies(companies.map(c => c.id === selected.id ? { ...c, current: c.current - 1 } : c));
+          setLog([{ time: now, company: selected.name, action: 'RA', plate: plateDisp }, ...log]);
+          setFlash('out');
+        }
+        setPlate(''); setTimeout(() => setFlash(null), 1800);
+      };
+
+      const handleExport = (period) => {
+        const rows = [['Thời gian', 'Đơn vị', 'Hành động', 'Biển số']];
+        log.forEach(l => rows.push([l.time, l.company, l.action, l.plate]));
+        exportCSV(`bao-cao-cong-${period.toLowerCase()}.csv`, rows);
+      };
+
+      return (
+        <div className="fade-in grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="card p-6 flex flex-col gap-5">
+            <div>
+              <h2 className="text-xl font-extrabold text-gray-900 flex items-center gap-2"><Icon name="shield-check" size={24} className="text-blue-600" /> Kiểm Soát Cổng</h2>
+              <p className="text-sm text-gray-500 mt-1">Chọn đơn vị → Xem trạng thái → Cho xe vào / ra</p>
+            </div>
+            {flash === 'in' && (<div className="fade-in text-center py-4 rounded-xl font-extrabold text-2xl bg-green-100 text-green-700 border-2 border-green-300">✅ ĐÃ CHO XE VÀO</div>)}
+            {flash === 'out' && (<div className="fade-in text-center py-4 rounded-xl font-extrabold text-2xl bg-orange-100 text-orange-700 border-2 border-orange-300">🔴 ĐÃ CHO XE RA</div>)}
+            <div>
+              <label className="label-lg">🏢 Chọn Đơn vị / Công ty</label>
+              <select className="select-lg" value={selectedCompanyId} onChange={e => setSelectedCompanyId(e.target.value)}>
+                <option value="">-- Chọn công ty --</option>
+                {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            {selected && (
+              <>
+                <div className={`rounded-xl px-5 py-5 text-center border-2 ${isFull ? 'bg-red-50 border-red-300' : isNearFull ? 'bg-yellow-50 border-yellow-300' : 'bg-green-50 border-green-300'} fade-in`}>
+                  <div className={`text-3xl font-extrabold ${isFull ? 'text-red-600' : isNearFull ? 'text-yellow-600' : 'text-green-600'}`}>
+                    {isFull ? '🚫 HẾT CHỖ / HẾT HỢP ĐỒNG' : isNearFull ? `⚠️ SẮP ĐẦY – ${selected.current}/${selected.quota} xe` : `✅ HỢP LỆ – Đã vào ${selected.current}/${selected.quota} xe`}
+                  </div>
+                  <div className={`text-base mt-2 font-semibold ${isFull ? 'text-red-400' : isNearFull ? 'text-yellow-500' : 'text-green-500'}`}>
+                    Còn trống: {selected.quota - selected.current} chỗ · HĐ: {selected.expiry}
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm font-semibold text-gray-500 mb-1"><span>Đã sử dụng</span><span>{Math.round((selected.current / selected.quota) * 100)}%</span></div>
+                  <div className="h-5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-500 ${isFull ? 'bg-red-500' : isNearFull ? 'bg-yellow-400' : 'bg-green-500'}`} style={{ width: `${Math.min((selected.current / selected.quota) * 100, 100)}%` }} />
+                  </div>
+                </div>
+                <div>
+                  <label className="label-lg">🚗 Biển số xe (tuỳ chọn)</label>
+                  <input className="input-lg" placeholder="Nhập biển số xe đang vào/ra" value={plate} onChange={e => setPlate(e.target.value)} />
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  <button onClick={() => handleGateAction('in')} disabled={isFull} className={`btn-success py-5 text-xl flex flex-col items-center gap-1 ${isFull ? 'opacity-40 cursor-not-allowed' : ''}`}>
+                    <Icon name="log-in" size={30} /><span>CHO XE VÀO</span><span className="text-sm font-normal opacity-80">(+1 xe)</span>
+                  </button>
+                  <button onClick={() => handleGateAction('out')} disabled={selected.current <= 0} className={`btn-danger py-5 text-xl flex flex-col items-center gap-1 ${selected.current <= 0 ? 'opacity-40 cursor-not-allowed' : ''}`}>
+                    <Icon name="log-out" size={30} /><span>CHO XE RA</span><span className="text-sm font-normal opacity-80">(-1 xe)</span>
+                  </button>
+                </div>
+              </>
+            )}
+            {!selected && (<div className="flex-1 flex flex-col items-center justify-center text-gray-300 py-10"><Icon name="mouse-pointer-click" size={48} /><p className="mt-3 text-lg font-semibold">Vui lòng chọn đơn vị để bắt đầu</p></div>)}
+          </div>
+
+          <div className="flex flex-col gap-5">
+            {/* Accordion Quota */}
+            <div className="card p-5">
+              <button className="accordion-btn" onClick={() => setQuotaOpen(o => !o)}>
+                <span className="flex items-center gap-2"><Icon name="bar-chart-2" size={20} /> 📊 Xem Quota Realtime</span>
+                <Icon name={quotaOpen ? 'chevron-up' : 'chevron-down'} size={20} />
+              </button>
+              {quotaOpen && (
+                <div className="mt-4 fade-in overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-gray-100">
+                        {['Đơn vị', 'Trong bãi', 'Hạn mức', 'Trạng thái'].map(h => <th key={h} className="text-left py-2 px-2 text-xs font-bold text-gray-400 uppercase">{h}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {companies.map(c => {
+                        const pct = c.current / c.quota; const full = c.current >= c.quota; const near = !full && pct >= 0.8;
+                        return (
+                          <tr key={c.id} className={selectedCompanyId == c.id ? 'bg-blue-50' : ''}>
+                            <td className="py-2.5 px-2 font-medium text-gray-800 text-xs">{c.name}</td>
+                            <td className="py-2.5 px-2 text-center font-extrabold text-2xl text-gray-900">{c.current}</td>
+                            <td className="py-2.5 px-2 text-center text-gray-500">{c.quota}</td>
+                            <td className="py-2.5 px-2 text-center">{full ? <span className="badge-danger">HẾT CHỖ</span> : near ? <span className="badge-warn">SẮP ĐẦY</span> : <span className="badge-ok">Còn chỗ</span>}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Gate Log */}
+            <div className="card p-5 flex flex-col gap-3">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <h3 className="font-extrabold text-gray-900 text-lg flex items-center gap-2"><Icon name="clock" size={20} className="text-gray-500" /> Nhật Ký Cổng Hôm Nay</h3>
+                <ExportButton onExport={handleExport} />
+              </div>
+              <div className="gate-log-scroll space-y-2 pr-1">
+                {log.map((l, i) => (
+                  <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
+                    <span className="text-sm font-bold text-gray-400 w-12 flex-shrink-0">{l.time}</span>
+                    <span className={`text-xs font-extrabold px-2 py-1 rounded-md flex-shrink-0 ${l.action === 'VÀO' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>{l.action}</span>
+                    <div className="flex-1 min-w-0"><div className="text-sm font-semibold text-gray-800 truncate">{l.company}</div><div className="text-xs text-gray-400">{l.plate}</div></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── TAB 4: LIFT / LOWER ──
+    function LiftTab() {
+      const [form, setForm] = useState({ company: '', weight: '', action: 'NÂNG', hasCrew: false });
+      const [inProgress, setInProgress] = useState([]);
+      const [history, setHistory] = useState(LIFT_HISTORY);
+      const [nextId, setNextId] = useState(46);
+
+      const company = COMPANIES.find(c => c.id === Number(form.company));
+      const companyValid = company && company.current > 0;
+
+      const handleStart = () => {
+        if (!form.company || !form.weight) return;
+        const now = new Date();
+        const startStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        const id = `LH-${String(nextId).padStart(4, '0')}`;
+        setNextId(n => n + 1);
+        const entry = { id, company: company?.name || form.company, action: form.action, weight: Number(form.weight), hasCrew: form.hasCrew, start: startStr, date: now.toLocaleDateString('vi-VN'), startMs: now.getTime() };
+        setInProgress(prev => [...prev, entry]);
+        setForm({ company: '', weight: '', action: 'NÂNG', hasCrew: false });
+      };
+
+      const handleDone = (id) => {
+        const item = inProgress.find(i => i.id === id);
+        if (!item) return;
+        setInProgress(prev => prev.filter(i => i.id !== id));
+        setHistory(prev => [item, ...prev]);
+      };
+
+      const handleExport = (period) => {
+        const rows = [['Mã lệnh', 'Đơn vị', 'Tác vụ', 'Trọng tải (tấn)', 'Đổ công', 'Giờ bắt đầu', 'Ngày']];
+        history.forEach(h => rows.push([h.id, h.company, h.action, h.weight, h.hasCrew ? 'Có' : 'Không', h.start, h.date]));
+        exportCSV(`nang-ha-${period.toLowerCase()}.csv`, rows);
+      };
+
+      return (
+        <div className="fade-in grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="card p-6 flex flex-col gap-5">
+            <div>
+              <h2 className="text-xl font-extrabold text-gray-900 flex items-center gap-2"><Icon name="arrow-up-down" size={24} className="text-blue-600" /> Tạo Lệnh Nâng Hạ Mới</h2>
+              <p className="text-sm text-gray-500 mt-1">Điền thông tin → BẮT ĐẦU → lệnh vào danh sách đang thực hiện</p>
+            </div>
+            <div>
+              <label className="label-lg">🏢 Đơn vị / Công ty đối tác</label>
+              <select className="select-lg" value={form.company} onChange={e => setForm({ ...form, company: e.target.value })}>
+                <option value="">-- Chọn đơn vị --</option>
+                {COMPANIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              {form.company && !companyValid && (<p className="text-sm text-red-500 mt-1 font-semibold">⚠️ Đơn vị này hiện không có xe trong bãi!</p>)}
+            </div>
+            <div>
+              <label className="label-lg">⚖️ Trọng tải hàng hóa (tấn)</label>
+              <input className="input-lg" type="number" min="0.1" step="0.1" placeholder="Ví dụ: 18.5" value={form.weight} onChange={e => setForm({ ...form, weight: e.target.value })} />
+            </div>
+            <div>
+              <label className="label-lg">🔄 Tác vụ</label>
+              <div className="grid grid-cols-2 gap-3 mt-1">
+                {['NÂNG', 'HẠ'].map(opt => (
+                  <button key={opt} type="button" onClick={() => setForm({ ...form, action: opt })}
+                    className={`py-4 rounded-xl text-xl font-extrabold border-2 transition-all ${form.action === opt ? (opt === 'NÂNG' ? 'bg-blue-600 text-white border-blue-600' : 'bg-orange-500 text-white border-orange-500') : 'bg-white text-gray-400 border-gray-200'}`}>
+                    {opt === 'NÂNG' ? '⬆ NÂNG' : '⬇ HẠ'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <label className={`flex items-center gap-3 cursor-pointer select-none rounded-xl p-4 border-2 transition-all ${form.hasCrew ? 'bg-purple-50 border-purple-300' : 'bg-gray-50 border-gray-100'}`}>
+              <input type="checkbox" className="w-6 h-6 accent-purple-600" checked={form.hasCrew} onChange={e => setForm({ ...form, hasCrew: e.target.checked })} />
+              <div><div className="font-bold text-gray-800 text-base">Có bao gồm đổ công (nhân công thủ công)?</div><div className="text-xs text-gray-400 mt-0.5">Tích chọn nếu có nhân công bốc xếp đi kèm</div></div>
+            </label>
+            <button onClick={handleStart} disabled={!form.company || !form.weight}
+              className={`btn-primary py-5 text-xl flex items-center justify-center gap-3 ${(!form.company || !form.weight) ? 'opacity-40 cursor-not-allowed' : ''}`}>
+              <Icon name="play-circle" size={28} /> BẮT ĐẦU NÂNG / HẠ
+            </button>
+
+            {/* In Progress List */}
+            {inProgress.length > 0 && (
+              <div>
+                <h3 className="font-extrabold text-gray-800 text-base mb-3 flex items-center gap-2"><Icon name="loader" size={18} className="text-blue-600" /> Đang thực hiện ({inProgress.length} lệnh)</h3>
+                <div className="space-y-3">
+                  {inProgress.map(item => (
+                    <div key={item.id} className="in-progress-card flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-sm font-extrabold px-2 py-0.5 rounded ${item.action === 'NÂNG' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}>{item.action === 'NÂNG' ? '⬆ NÂNG' : '⬇ HẠ'}</span>
+                          <span className="text-xs text-gray-400 font-mono">{item.id}</span>
+                        </div>
+                        <div className="font-semibold text-gray-800 mt-1 text-sm truncate max-w-xs">{item.company}</div>
+                        <div className="text-sm text-gray-600">{item.weight} tấn{item.hasCrew && <span className="ml-2 text-purple-600 text-xs font-semibold">+ Đổ công</span>}</div>
+                        <div className="text-xs text-gray-400 mt-0.5">📍 Bắt đầu: {item.start}</div>
+                      </div>
+                      <button onClick={() => handleDone(item.id)} className="btn-success px-3 py-2 text-sm flex items-center gap-1 flex-shrink-0">
+                        <Icon name="check-circle-2" size={16} /> Hoàn thành
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="card p-6 flex flex-col gap-4 overflow-hidden">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h3 className="font-extrabold text-gray-900 text-lg flex items-center gap-2"><Icon name="history" size={20} className="text-gray-500" /> Lịch Sử Nâng Hạ Hôm Nay</h3>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-400 font-semibold">{history.length} lệnh</span>
+                <ExportButton onExport={handleExport} />
+              </div>
+            </div>
+            <div className="overflow-y-auto space-y-3 flex-1">
+              {history.map((h) => (
+                <div key={h.id} className="border border-gray-100 rounded-lg p-4 bg-white">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`text-sm font-extrabold px-2 py-0.5 rounded ${h.action === 'NÂNG' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}>{h.action === 'NÂNG' ? '⬆ NÂNG' : '⬇ HẠ'}</span>
+                        <span className="text-xs text-gray-400 font-mono">{h.id}</span>
+                      </div>
+                      <div className="font-semibold text-gray-800 mt-1 text-sm">{h.company}</div>
+                      <div className="text-sm text-gray-600 mt-0.5"><span className="font-bold">{h.weight} tấn</span>{h.hasCrew && <span className="ml-2 text-purple-600 text-xs font-semibold">+ Đổ công</span>}</div>
+                      <div className="text-xs text-gray-400 mt-1">📍 Bắt đầu: {h.start}</div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <span className="badge-ok">Hoàn thành</span>
+                      <div className="text-xs text-gray-400 mt-1">{h.date}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── APP ROOT ──
+    function App() {
+      const [activeTab, setActiveTab] = useState('maintenance');
+      const renderContent = () => {
+        if (activeTab === 'maintenance') return <MaintenanceTab />;
+        if (activeTab === 'vehicle') return <VehicleManagementTab />;
+        if (activeTab === 'gate') return <GateTab />;
+        if (activeTab === 'lift') return <LiftTab />;
+      };
+      const tabMeta = {
+        maintenance: { title: 'Quản Lý Bảo Dưỡng Xe', icon: 'wrench', desc: 'Tạo lệnh công việc và quản lý xuất kho vật tư' },
+        vehicle: { title: 'Quản Lý Xe & Vật Tư', icon: 'car', desc: 'Tracking lịch sử xe, vật tư và hóa đơn mua ngoài' },
+        gate: { title: 'Kiểm Soát Cổng & Hợp Đồng', icon: 'shield-check', desc: 'Theo dõi quota xe ra/vào theo đơn vị hợp đồng' },
+        lift: { title: 'Lệnh Nâng Hạ Hàng Hóa', icon: 'arrow-up-down', desc: 'Quản lý đa nhiệm các lệnh nâng hạ đồng thời' },
+      };
+      const meta = tabMeta[activeTab];
+      return (
+        <div className="flex h-screen overflow-hidden" style={{ background: '#F3F4F6' }}>
+          <Sidebar active={activeTab} setActive={setActiveTab} />
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <Topbar />
+            <div className="px-6 pt-5 pb-3 border-b border-gray-200 bg-white flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: '#EFF6FF' }}>
+                <Icon name={meta.icon} size={22} className="text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-xl font-extrabold text-gray-900">{meta.title}</h1>
+                <p className="text-sm text-gray-500">{meta.desc}</p>
+              </div>
+            </div>
+            <main className="flex-1 overflow-y-auto p-6">{renderContent()}</main>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+
+</html>
